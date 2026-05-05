@@ -1,9 +1,6 @@
-/* Kursor crosshair pada peta agar user tahu bisa diklik */
 .leaflet-container {
     cursor: crosshair !important;
 }
-
-/* Kustomisasi Scrollbar untuk tabel dan sidebar form */
 .scrollbar-custom::-webkit-scrollbar, aside::-webkit-scrollbar {
     width: 6px;
 }
