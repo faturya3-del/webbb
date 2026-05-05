@@ -4,7 +4,6 @@ import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstati
 import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-storage.js";
 
-// --- KONFIGURASI PETA ---
 const map = L.map('map').setView([-0.9471, 100.3658], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
@@ -12,7 +11,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 let markerLaporan;
 
-// --- FITUR LOKASI REAL-TIME ---
 const btnLokasiRealtime = document.getElementById('btnLokasiRealtime');
 btnLokasiRealtime.onclick = () => {
     if (!navigator.geolocation) {
@@ -51,7 +49,7 @@ btnLokasiRealtime.onclick = () => {
     );
 };
 
-// --- KLIK MANUAL DI PETA ---
+
 map.on('click', (e) => {
     if (markerLaporan) map.removeLayer(markerLaporan);
     markerLaporan = L.marker(e.latlng).addTo(map);
@@ -59,7 +57,6 @@ map.on('click', (e) => {
     document.getElementById('lng').value = e.latlng.lng.toFixed(6);
 });
 
-// --- AUTHENTICATION ---
 const btnLogin = document.getElementById('btnLogin');
 const btnLogout = document.getElementById('btnLogout');
 const statusUser = document.getElementById('statusUser');
@@ -79,7 +76,6 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// --- PENGIRIMAN FORM (FIX ERROR) ---
 document.getElementById('formLaporan').onsubmit = async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btnKirim');
@@ -122,7 +118,6 @@ document.getElementById('formLaporan').onsubmit = async (e) => {
             timestamp: serverTimestamp()
         });        
        
-        // POP UP SUKSES - DESAIN GEOREPORT
         Swal.fire({
             title: 'Laporan Terkirim!',
             text: 'Terima kasih, pengaduan Anda berhasil masuk ke sistem GeoReport.',
@@ -136,7 +131,6 @@ document.getElementById('formLaporan').onsubmit = async (e) => {
 
     } catch (err) {
         console.error(err);
-        // POP UP GAGAL
         Swal.fire({
             title: 'Gagal!',
             text: 'Terjadi kesalahan: ' + err.message,
@@ -148,7 +142,6 @@ document.getElementById('formLaporan').onsubmit = async (e) => {
     }
 };
 
-// --- LOAD MARKERS ---
 async function loadMarkers() {
     try {
         const snapAnonim = await getDocs(collection(db, "laporan_anonim"));
