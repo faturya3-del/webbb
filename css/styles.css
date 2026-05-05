@@ -1,0 +1,19 @@
+/* Kursor crosshair pada peta agar user tahu bisa diklik */
+.leaflet-container {
+    cursor: crosshair !important;
+}
+
+/* Kustomisasi Scrollbar untuk tabel dan sidebar form */
+.scrollbar-custom::-webkit-scrollbar, aside::-webkit-scrollbar {
+    width: 6px;
+}
+.scrollbar-custom::-webkit-scrollbar-track, aside::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb, aside::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb:hover, aside::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

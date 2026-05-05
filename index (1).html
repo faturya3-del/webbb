@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoPortal Kriminalitas - Lapor!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-100 h-screen flex flex-col overflow-hidden">
+    <!-- Navbar -->
+    <nav class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shadow-lg">
+        <div class="font-bold text-xl flex items-center gap-2">🛡️ GeoPortal Kriminalitas</div>
+        <div class="flex gap-4 items-center">
+            <a href="dashboard.html" class="text-slate-300 hover:text-white text-sm transition">Dashboard Admin</a>
+            <div id="authContainer" class="flex gap-2">
+                <button id="btnLogin" class="bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded text-sm transition">Login Google</button>
+                <button id="btnLogout" class="bg-red-600 hover:bg-red-700 px-4 py-1.5 rounded text-sm transition hidden">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Konten -->
+    <main class="flex-1 flex p-4 gap-4 overflow-hidden">
+        <!-- Sidebar Form -->
+        <aside class="w-[380px] bg-white p-5 rounded-xl shadow-sm border border-slate-200 overflow-y-auto">
+            <div class="mb-4">
+                <h2 class="font-bold text-lg text-slate-800">📝 Form Pengaduan</h2>
+                <p id="statusUser" class="text-[11px] font-semibold text-slate-500 bg-slate-100 p-1.5 rounded inline-block mt-1">Status: Anonim</p>
+            </div>
+
+            <form id="formLaporan" class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-600 uppercase">Nama Pelapor</label>
+                    <input type="text" id="nama" placeholder="Nama Anda (Boleh Samaran)" required class="w-full border p-2 rounded mt-1 text-sm outline-blue-500">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-600 uppercase">Nama Wilayah/Daerah</label>
+                    <input type="text" id="wilayah" placeholder="Contoh: Padang Barat" required class="w-full border p-2 rounded mt-1 text-sm outline-blue-500">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-600 uppercase">Kategori Kriminalitas</label>
+                    <select id="kategori" required class="w-full border p-2 rounded mt-1 text-sm outline-blue-500">
+                        <option value="">Pilih Kategori...</option>
+                        <option value="Pencurian">Pencurian</option>
+                        <option value="Perampokan">Perampokan</option>
+                        <option value="Kekerasan">Kekerasan</option>
+                        <option value="Narkoba">Narkoba</option>
+                        <option value="Begal">Begal</option>
+                        <option value="Tawuran">Tawuran</option>
+                        <option value="Pelecehan">Pelecehan</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-600 uppercase">Keterangan / Kronologi</label>
+                    <textarea id="keterangan" required class="w-full border p-2 rounded mt-1 text-sm h-20 resize-none outline-blue-500" placeholder="Jelaskan detail kejadian..."></textarea>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-600 uppercase">Bukti Foto</label>
+                    <input type="file" id="foto" accept="image/*" class="w-full text-xs mt-1 border p-1 rounded">
+                </div>
+                <div class="bg-blue-50 p-3 rounded border border-blue-200">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="text-[10px] text-blue-700 font-bold uppercase">Lokasi Kejadian</p>
+                        <button type="button" id="btnLokasiRealtime" class="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded hover:bg-blue-700 transition flex items-center gap-1">
+                            📍 Lokasi Saya
+                        </button>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="lat" readonly placeholder="Latitude" class="w-1/2 p-1.5 text-xs border rounded bg-white" required>
+                        <input type="text" id="lng" readonly placeholder="Longitude" class="w-1/2 p-1.5 text-xs border rounded bg-white" required>
+                    </div>
+                    <p class="text-[9px] text-slate-500 mt-1 italic">*Klik peta atau gunakan tombol Lokasi Saya</p>
+                </div>
+                <button type="submit" id="btnKirim" class="w-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700 transition">Kirim Laporan</button>
+            </form>
+        </aside>
+
+        <!-- Area Peta -->
+        <section class="flex-1 rounded-xl shadow-inner border border-slate-200 overflow-hidden relative">
+            <div id="map" class="w-full h-full z-0"></div>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="js/map.js?v=2"></script>
+</body>
+</html>
