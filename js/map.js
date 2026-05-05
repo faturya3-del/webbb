@@ -3,50 +3,33 @@ import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstati
 import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-storage.js";
 
-// 1. Inisialisasi Peta (Default Lokasi: Padang)
 const map = L.map('map').setView([-0.9471, 100.3658], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
-
-// Tambahkan kodingan ini di file js/map.js
-
 const btnLokasiRealtime = document.getElementById('btnLokasiRealtime');
-
 btnLokasiRealtime.onclick = () => {
-    // 1. Cek apakah browser mendukung fitur Geolocation
     if (!navigator.geolocation) {
         return alert("Browser Anda tidak mendukung fitur lokasi.");
     }
 
     btnLokasiRealtime.innerText = "Mencari...";
     btnLokasiRealtime.disabled = true;
-
-    // 2. Ambil koordinat GPS perangkat
     navigator.geolocation.getCurrentPosition(
         (position) => {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-
-            // 3. Update Nilai Input di Form
             document.getElementById('lat').value = lat.toFixed(6);
             document.getElementById('lng').value = lng.toFixed(6);
-
-            // 4. Update Marker di Peta
             if (markerLaporan) map.removeLayer(markerLaporan);
             markerLaporan = L.marker([lat, lng]).addTo(map);
-
-            // 5. Arahkan Peta ke lokasi tersebut
-            map.setView([lat, lng], 16); // Zoom 16 agar lebih dekat
-
+            map.setView([lat, lng], 16); 
             btnLokasiRealtime.innerText = "📍 Lokasi Saya";
             btnLokasiRealtime.disabled = false;
         },
         (error) => {
             btnLokasiRealtime.innerText = "📍 Lokasi Saya";
             btnLokasiRealtime.disabled = false;
-            
-            // Handle error jika GPS dimatikan atau akses ditolak
             switch(error.code) {
                 case error.PERMISSION_DENIED:
                     alert("Akses lokasi ditolak. Harap izinkan akses lokasi di browser Anda.");
@@ -63,14 +46,13 @@ btnLokasiRealtime.onclick = () => {
             }
         },
         {
-            enableHighAccuracy: true, // Gunakan GPS dengan akurasi tinggi
+            enableHighAccuracy: true,
             timeout: 5000,
             maximumAge: 0
         }
     );
 };
 
-// 2. Klik Peta untuk Input Koordinat
 let markerLaporan;
 map.on('click', (e) => {
     if (markerLaporan) map.removeLayer(markerLaporan);
@@ -78,8 +60,6 @@ map.on('click', (e) => {
     document.getElementById('lat').value = e.latlng.lat.toFixed(6);
     document.getElementById('lng').value = e.latlng.lng.toFixed(6);
 });
-
-// 3. Sistem Auth (Login/Logout)
 const btnLogin = document.getElementById('btnLogin');
 const btnLogout = document.getElementById('btnLogout');
 const statusUser = document.getElementById('statusUser');
@@ -99,7 +79,6 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// 4. Submit Form Laporan
 document.getElementById('formLaporan').onsubmit = async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btnKirim');
@@ -120,7 +99,6 @@ document.getElementById('formLaporan').onsubmit = async (e) => {
             urlFoto = await getDownloadURL(fileRef);
         }
 
-        // Pisahkan Folder (Collection)
         const koleksiTarget = user ? "laporan_member" : "laporan_anonim";
         const emailPelapor = user ? user.email : "Anonim";
 
