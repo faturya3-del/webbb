@@ -112,8 +112,7 @@ document.getElementById('formLaporan').onsubmit = async (e) => {
             pelapor: emailPelapor,
             status: "Baru",
             timestamp: serverTimestamp()
-        });
-
+        });        
         Swal.fire({
     title: 'Laporan Terkirim!',
     text: 'Terima kasih, pengaduan Anda telah berhasil masuk ke sistem GeoReport.',
@@ -125,7 +124,7 @@ document.getElementById('formLaporan').onsubmit = async (e) => {
     color: '#0f172a',
     customClass: {
         popup: 'rounded-2xl border-2 border-gray-100 shadow-xl'
-    }
+    }   } catch (err) {
 });
 };
 
