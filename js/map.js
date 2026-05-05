@@ -3,18 +3,24 @@ import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstati
 import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-storage.js";
 
+// --- KONFIGURASI PETA ---
 const map = L.map('map').setView([-0.9471, 100.3658], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
+
+let markerLaporan;
+
+// --- FITUR LOKASI REAL-TIME ---
 const btnLokasiRealtime = document.getElementById('btnLokasiRealtime');
 btnLokasiRealtime.onclick = () => {
     if (!navigator.geolocation) {
-        return alert("Browser Anda tidak mendukung fitur lokasi.");
+        return Swal.fire("Gagal", "Browser Anda tidak mendukung fitur lokasi.", "error");
     }
 
     btnLokasiRealtime.innerText = "Mencari...";
     btnLokasiRealtime.disabled = true;
+
     navigator.geolocation.getCurrentPosition(
         (position) => {
             const lat = position.coords.latitude;
@@ -30,36 +36,29 @@ btnLokasiRealtime.onclick = () => {
         (error) => {
             btnLokasiRealtime.innerText = "📍 Lokasi Saya";
             btnLokasiRealtime.disabled = false;
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    alert("Akses lokasi ditolak. Harap izinkan akses lokasi di browser Anda.");
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    alert("Informasi lokasi tidak tersedia.");
-                    break;
-                case error.TIMEOUT:
-                    alert("Waktu pencarian lokasi habis.");
-                    break;
-                default:
-                    alert("Terjadi kesalahan saat mengambil lokasi.");
-                    break;
-            }
+            let pesanError = "Terjadi kesalahan saat mengambil lokasi.";
+            if (error.code === error.PERMISSION_DENIED) pesanError = "Akses lokasi ditolak. Harap izinkan GPS di browser Anda.";
+            
+            Swal.fire({
+                title: "GPS Bermasalah",
+                text: pesanError,
+                icon: "warning",
+                confirmButtonColor: '#1e293b'
+            });
         },
-        {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-        }
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
     );
 };
 
-let markerLaporan;
+// --- KLIK MANUAL DI PETA ---
 map.on('click', (e) => {
     if (markerLaporan) map.removeLayer(markerLaporan);
     markerLaporan = L.marker(e.latlng).addTo(map);
     document.getElementById('lat').value = e.latlng.lat.toFixed(6);
     document.getElementById('lng').value = e.latlng.lng.toFixed(6);
 });
+
+// --- AUTHENTICATION ---
 const btnLogin = document.getElementById('btnLogin');
 const btnLogout = document.getElementById('btnLogout');
 const statusUser = document.getElementById('statusUser');
@@ -79,13 +78,21 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+// --- PENGIRIMAN FORM (FIX ERROR) ---
 document.getElementById('formLaporan').onsubmit = async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btnKirim');
     const user = auth.currentUser;
     const lat = document.getElementById('lat').value;
 
-    if (!lat) return alert("Silakan klik lokasi kejadian di peta terlebih dahulu!");
+    if (!lat) {
+        return Swal.fire({
+            title: "Lokasi Kosong",
+            text: "Silakan pilih lokasi kejadian di peta terlebih dahulu!",
+            icon: "info",
+            confirmButtonColor: '#1e293b'
+        });
+    }
 
     btn.disabled = true;
     btn.innerText = "Mengirim...";
@@ -114,19 +121,35 @@ document.getElementById('formLaporan').onsubmit = async (e) => {
             timestamp: serverTimestamp()
         });        
        
-   alert("Berhasil! Laporan Anda telah tersimpan.");
-        location.reload(); // Refresh halaman
+        // POP UP SUKSES - DESAIN GEOREPORT
+        Swal.fire({
+            title: 'Laporan Terkirim!',
+            text: 'Terima kasih, pengaduan Anda berhasil masuk ke sistem GeoReport.',
+            icon: 'success',
+            iconColor: '#facc15',
+            confirmButtonText: 'Selesai',
+            confirmButtonColor: '#1e293b'
+        }).then(() => {
+            location.reload(); 
+        });
+
     } catch (err) {
-        alert("Terjadi kesalahan: " + err.message);
+        console.error(err);
+        // POP UP GAGAL
+        Swal.fire({
+            title: 'Gagal!',
+            text: 'Terjadi kesalahan: ' + err.message,
+            icon: 'error',
+            confirmButtonColor: '#ef4444'
+        });
         btn.disabled = false;
         btn.innerText = "Kirim Laporan";
     }
 };
 
-// 5. Muat Semua Laporan ke Peta (Marker Publik)
+// --- LOAD MARKERS ---
 async function loadMarkers() {
     try {
-        // Ambil dari Anonim & Member
         const snapAnonim = await getDocs(collection(db, "laporan_anonim"));
         snapAnonim.forEach(doc => renderMarkerPeta(doc.data()));
 
@@ -139,8 +162,7 @@ async function loadMarkers() {
 
 function renderMarkerPeta(data) {
     if (data.koordinat && data.koordinat.lat && data.koordinat.lng) {
-        // Warna Marker berdasarkan Status
-        let warna = "red"; // Baru
+        let warna = "red"; 
         if (data.status === "Diproses") warna = "orange";
         else if (data.status === "Selesai Ditinjau") warna = "green";
 
