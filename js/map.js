@@ -114,13 +114,19 @@ document.getElementById('formLaporan').onsubmit = async (e) => {
             timestamp: serverTimestamp()
         });
 
-        alert("Berhasil! Laporan Anda telah tersimpan.");
-        location.reload(); // Refresh halaman
-    } catch (err) {
-        alert("Terjadi kesalahan: " + err.message);
-        btn.disabled = false;
-        btn.innerText = "Kirim Laporan";
+        Swal.fire({
+    title: 'Laporan Terkirim!',
+    text: 'Terima kasih, pengaduan Anda telah berhasil masuk ke sistem GeoReport.',
+    icon: 'success',
+    iconColor: '#facc15', /* Warna kuning Tailwind (yellow-400) */
+    confirmButtonText: 'Kembali ke Peta',
+    confirmButtonColor: '#1e293b', /* Warna biru gelap khas navbar (slate-800) */
+    background: '#ffffff',
+    color: '#0f172a',
+    customClass: {
+        popup: 'rounded-2xl border-2 border-gray-100 shadow-xl'
     }
+});
 };
 
 // 5. Muat Semua Laporan ke Peta (Marker Publik)
