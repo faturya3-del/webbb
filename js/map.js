@@ -1,4 +1,3 @@
-import Swal from 'https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/+fesm';
 import { auth, provider, db, storage } from './firebase.js';
 import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
 import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
