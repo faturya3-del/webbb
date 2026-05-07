@@ -48,7 +48,6 @@ btnLokasiRealtime.onclick = () => {
     );
 };
 
-
 map.on('click', (e) => {
     if (markerLaporan) map.removeLayer(markerLaporan);
     markerLaporan = L.marker(e.latlng).addTo(map);
@@ -161,20 +160,41 @@ function renderMarkerPeta(data) {
 
         const iconMarker = L.divIcon({
             className: 'custom-icon',
-            html: `<div style="background-color:${warna}; width:16px; height:16px; border-radius:50%; border:2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
-            iconSize: [16, 16]
+            html: `<div style="background-color:${warna}; width:18px; height:18px; border-radius:50%; border:2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.5);"></div>`,
+            iconSize: [18, 18]
         });
 
         const marker = L.marker([data.koordinat.lat, data.koordinat.lng], {icon: iconMarker}).addTo(map);
-        
+
         let popupHTML = `
-            <div style="min-width: 150px;">
-                <h3 style="margin:0; font-weight:bold; color:#1e293b;">${data.kategori}</h3>
-                <p style="margin: 2px 0; font-size: 12px; color: gray;">📍 ${data.wilayah}</p>
-                <p style="margin: 5px 0 0; font-size: 11px;">Status: <b>${data.status}</b></p>
-            </div>
+            <div style="min-width: 200px; font-family: sans-serif;">
+                <h3 style="margin: 0; color: #1e293b; font-size: 16px; border-bottom: 2px solid #facc15; padding-bottom: 4px;">
+                    ${data.kategori}
+                </h3>
+                <div style="font-size: 12px; color: #334155; margin-top: 10px; line-height: 1.5;">
+                    <p style="margin: 2px 0;"><b>📍 Wilayah:</b> ${data.wilayah}</p>
+                    <p style="margin: 2px 0;"><b>👤 Pelapor:</b> ${data.nama || 'Anonim'}</p>
+                    <p style="margin: 2px 0;"><b>📝 Ket:</b> ${data.keterangan || '-'}</p>
+                    <p style="margin: 8px 0 4px;"><b>Status:</b> 
+                        <span style="background: ${warna}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">
+                            ${data.status}
+                        </span>
+                    </p>
+                </div>
         `;
-        if (data.foto) popupHTML += `<img src="${data.foto}" style="width:100%; border-radius:4px; margin-top:8px;">`;
+        if (data.foto) {
+            popupHTML += `
+                <div style="margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+                    <p style="font-size: 10px; font-weight: bold; color: #64748b; margin-bottom: 4px;">Bukti Foto:</p>
+                    <img src="${data.foto}" 
+                         style="width: 100%; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer;" 
+                         alt="Foto Kejadian"
+                         onclick="window.open('${data.foto}', '_blank')">
+                </div>
+            `;
+        }
+
+        popupHTML += `</div>`;
         marker.bindPopup(popupHTML);
     }
 }
